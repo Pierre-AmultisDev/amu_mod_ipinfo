@@ -165,6 +165,17 @@ jobs:
         with:
           name: ${{ needs.build.outputs.zip_name }}
 
+      - name: Maak mappen aan op server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host:     ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key:      ${{ secrets.DEPLOY_SSH_KEY }}
+          port:     ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            mkdir -p "${{ secrets.DEPLOY_PATH_MODULES }}/amu_ipinfo"
+            mkdir -p "${{ secrets.DEPLOY_PATH_UPDATES }}/joomla/modules/amu_ipinfo"
+
       - name: Upload ZIP to download.amultis.dev via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
