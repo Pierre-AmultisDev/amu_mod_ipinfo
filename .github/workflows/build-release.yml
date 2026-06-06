@@ -1,96 +1,66 @@
 name: Build & Release
 
-# ─────────────────────────────────────────────────────────
-# Triggers
-# ─────────────────────────────────────────────────────────
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'   # e.g. v1.2.3  → full release
-    branches:
-      - main                        # push to main → update .joomla/update.xml only
-  workflow_dispatch:                # manual trigger from GitHub UI
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch:
 
-# ─────────────────────────────────────────────────────────
-# Permissions
-# ─────────────────────────────────────────────────────────
 permissions:
-  contents: write   # needed to create releases and commit back update.xml
+  contents: write
 
-# ─────────────────────────────────────────────────────────
-# Jobs
-# ─────────────────────────────────────────────────────────
 jobs:
 
-  # ───────────────────────────────────────────
+  # ─────────────────────────────────────
   # Job 1: Build installable ZIP
-  # ───────────────────────────────────────────
+  # ─────────────────────────────────────
   build:
     name: Build ZIP
     runs-on: ubuntu-latest
 
     outputs:
-      version:   ${{ steps.meta.outputs.version }}
-      zip_name:  ${{ steps.meta.outputs.zip_name }}
-      is_tag:    ${{ steps.meta.outputs.is_tag }}
+      version:  ${{ steps.meta.outputs.version }}
+      zip_name: ${{ steps.meta.outputs.zip_name }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ── Determine version ───────────────────
-      - name: Extract version metadata
+      - name: Extract version from tag
         id: meta
         run: |
-          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
-            VERSION="${GITHUB_REF#refs/tags/v}"
-            IS_TAG="true"
-          else
-            # Use short SHA for dev builds on main
-            VERSION="dev-$(git rev-parse --short HEAD)"
-            IS_TAG="false"
-          fi
+          VERSION="${GITHUB_REF#refs/tags/v}"
           ZIP_NAME="mod_amu_ipinfo_v${VERSION}.zip"
           echo "version=${VERSION}"   >> "$GITHUB_OUTPUT"
           echo "zip_name=${ZIP_NAME}" >> "$GITHUB_OUTPUT"
-          echo "is_tag=${IS_TAG}"     >> "$GITHUB_OUTPUT"
-          echo "▶ version=${VERSION}, zip=${ZIP_NAME}, is_tag=${IS_TAG}"
+          echo "Version: ${VERSION} | ZIP: ${ZIP_NAME}"
 
-      # ── Patch version in manifest ────────────
-      - name: Inject version into mod_amu_ipinfo.xml
-        if: steps.meta.outputs.is_tag == 'true'
+      - name: Patch version into mod_amu_ipinfo.xml
         run: |
-          VERSION="${{ steps.meta.outputs.version }}"
-          sed -i "s|<version>.*</version>|<version>${VERSION}</version>|" \
-              src/mod_amu_ipinfo/mod_amu_ipinfo.xml
-          echo "▶ Manifest version set to ${VERSION}"
+          sed -i "s|<version>.*</version>|<version>${{ steps.meta.outputs.version }}</version>|" \
+            src/mod_amu_ipinfo/mod_amu_ipinfo.xml
 
-      # ── Build ZIP ───────────────────────────
-      - name: Package module ZIP
+      - name: Build ZIP from src/
         run: |
-          ZIP_NAME="${{ steps.meta.outputs.zip_name }}"
           cd src
-          zip -r "../${ZIP_NAME}" mod_amu_ipinfo/
+          zip -r "../${{ steps.meta.outputs.zip_name }}" mod_amu_ipinfo/
           cd ..
-          echo "▶ Created ${ZIP_NAME} ($(du -h "${ZIP_NAME}" | cut -f1))"
+          ls -lh "${{ steps.meta.outputs.zip_name }}"
 
-      # ── Upload as workflow artifact ─────────
-      - name: Upload ZIP artifact
+      - name: Upload ZIP as workflow artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.meta.outputs.zip_name }}
           path: ${{ steps.meta.outputs.zip_name }}
           retention-days: 30
 
-  # ───────────────────────────────────────────
-  # Job 2: Update the update.xml in .joomla/
-  # Always runs so GitHub can serve it as raw
-  # ───────────────────────────────────────────
+  # ─────────────────────────────────────
+  # Job 2: Commit updated .joomla/update.xml
+  # ─────────────────────────────────────
   update_xml:
     name: Regenerate update.xml
     runs-on: ubuntu-latest
     needs: build
-    if: needs.build.outputs.is_tag == 'true'
 
     steps:
       - name: Checkout repository
@@ -98,64 +68,33 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Generate .joomla/update.xml
-        run: |
-          VERSION="${{ needs.build.outputs.version }}"
-          ZIP_NAME="${{ needs.build.outputs.zip_name }}"
-          DOWNLOAD_URL="https://download.amultis.dev/joomla/modules/amu_ipinfo/${ZIP_NAME}"
+      - name: Generate .joomla/update.xml via Python script
+        env:
+          VERSION:      ${{ needs.build.outputs.version }}
+          DOWNLOAD_URL: https://download.amultis.dev/joomla/modules/amu_ipinfo/${{ needs.build.outputs.zip_name }}
+          OUTPUT_PATH:  .joomla/update.xml
+        run: python3 .github/scripts/generate_update_xml.py
 
-          cat > .joomla/update.xml <<XML
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-    Auto-generated by GitHub Actions on $(date -u +"%Y-%m-%dT%H:%M:%SZ")
-    Tag: v${VERSION}
--->
-<updates>
-    <update>
-        <name>AMU IP Info</name>
-        <description>Displays the visitor's IP address (IPv4 / IPv6) with optional Geo IP lookup.</description>
-        <element>mod_amu_ipinfo</element>
-        <type>module</type>
-        <client>site</client>
-        <version>${VERSION}</version>
-        <infourl title="AMU IP Info">https://github.com/Pierre-AmultisDev/amu_mod_ipinfo</infourl>
-        <downloads>
-            <downloadurl type="full" format="zip">${DOWNLOAD_URL}</downloadurl>
-        </downloads>
-        <tags>
-            <tag>stable</tag>
-        </tags>
-        <maintainer>Amultis</maintainer>
-        <maintainerurl>https://amultis.dev</maintainerurl>
-        <targetplatform name="joomla" version="5.[0-9]+" />
-        <targetplatform name="joomla" version="6.[0-9]+" />
-        <php_minimum>8.1</php_minimum>
-    </update>
-</updates>
-XML
-          echo "▶ Generated .joomla/update.xml for v${VERSION}"
-          cat .joomla/update.xml
-
-      - name: Commit update.xml back to repository
+      - name: Commit update.xml back to main
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .joomla/update.xml
-          git diff --staged --quiet && echo "No changes" || \
-            git commit -m "chore: update .joomla/update.xml for v${{ needs.build.outputs.version }} [skip ci]"
+          git diff --staged --quiet \
+            && echo "No changes to commit" \
+            || git commit -m "chore: update.xml for v${{ needs.build.outputs.version }} [skip ci]"
           git push
 
-  # ───────────────────────────────────────────
-  # Job 3: Create GitHub Release (tags only)
-  # ───────────────────────────────────────────
+  # ─────────────────────────────────────
+  # Job 3: GitHub Release
+  # ─────────────────────────────────────
   release:
     name: GitHub Release
     runs-on: ubuntu-latest
     needs: [build, update_xml]
-    if: needs.build.outputs.is_tag == 'true'
 
     steps:
-      - name: Checkout (for changelog)
+      - name: Checkout (for CHANGELOG)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -165,16 +104,15 @@ XML
         with:
           name: ${{ needs.build.outputs.zip_name }}
 
-      - name: Extract changelog section for this version
+      - name: Extract changelog section
         id: changelog
         run: |
           VERSION="${{ needs.build.outputs.version }}"
-          # Pull the section from CHANGELOG.md between this version and the previous heading
-          NOTES=$(awk "/^## \[?${VERSION//./\\.}\]?/{flag=1; next} /^## /{flag=0} flag" CHANGELOG.md 2>/dev/null || echo "")
+          ESCAPED="${VERSION//./\\.}"
+          NOTES=$(awk "/^## \\[?${ESCAPED}\\]?/{flag=1; next} /^## /{flag=0} flag" CHANGELOG.md 2>/dev/null || true)
           if [ -z "$NOTES" ]; then
             NOTES="Release v${VERSION}"
           fi
-          # GitHub output — multiline
           {
             echo "notes<<EOF"
             echo "$NOTES"
@@ -184,32 +122,33 @@ XML
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ needs.build.outputs.version }}
-          name: "AMU IP Info v${{ needs.build.outputs.version }}"
-          body: ${{ steps.changelog.outputs.notes }}
-          draft: false
+          tag_name:   v${{ needs.build.outputs.version }}
+          name:       AMU IP Info v${{ needs.build.outputs.version }}
+          body:       ${{ steps.changelog.outputs.notes }}
+          draft:      false
           prerelease: false
-          files: ${{ needs.build.outputs.zip_name }}
+          files:      ${{ needs.build.outputs.zip_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # ───────────────────────────────────────────
-  # Job 4: Deploy to download.amultis.dev
-  # Uses SSH to copy ZIP to your server
-  # ───────────────────────────────────────────
+  # ─────────────────────────────────────
+  # Job 4: Deploy to amultis.dev servers
+  # ─────────────────────────────────────
   deploy:
-    name: Deploy to download.amultis.dev
+    name: Deploy to amultis.dev
     runs-on: ubuntu-latest
     needs: [build, release]
-    if: needs.build.outputs.is_tag == 'true'
 
     steps:
+      - name: Checkout (for deploy script)
+        uses: actions/checkout@v4
+
       - name: Download ZIP artifact
         uses: actions/download-artifact@v4
         with:
           name: ${{ needs.build.outputs.zip_name }}
 
-      - name: Upload ZIP via SSH/SCP
+      - name: Upload ZIP to download.amultis.dev via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
           host:     ${{ secrets.DEPLOY_HOST }}
@@ -219,39 +158,27 @@ XML
           source:   ${{ needs.build.outputs.zip_name }}
           target:   ${{ secrets.DEPLOY_PATH_MODULES }}/amu_ipinfo/
 
-      - name: Reload update.xml on update.amultis.dev via SSH
+      - name: Upload Python helper script via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host:     ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key:      ${{ secrets.DEPLOY_SSH_KEY }}
+          port:     ${{ secrets.DEPLOY_PORT || 22 }}
+          source:   .github/scripts/generate_update_xml.py
+          target:   /tmp/amu_deploy/
+
+      - name: Write update.xml on update.amultis.dev via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host:     ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key:      ${{ secrets.DEPLOY_SSH_KEY }}
           port:     ${{ secrets.DEPLOY_PORT || 22 }}
-          script: |
+          script: >-
             VERSION="${{ needs.build.outputs.version }}"
             ZIP_NAME="${{ needs.build.outputs.zip_name }}"
-            DEST="${{ secrets.DEPLOY_PATH_UPDATES }}/joomla/modules/amu_ipinfo"
-            mkdir -p "$DEST"
-            cat > "$DEST/update.xml" <<XML
-<?xml version="1.0" encoding="utf-8"?>
-<updates>
-    <update>
-        <name>AMU IP Info</name>
-        <description>Displays the visitor's IP address (IPv4 / IPv6) with optional Geo IP lookup.</description>
-        <element>mod_amu_ipinfo</element>
-        <type>module</type>
-        <client>site</client>
-        <version>${VERSION}</version>
-        <infourl title="AMU IP Info">https://github.com/Pierre-AmultisDev/amu_mod_ipinfo</infourl>
-        <downloads>
-            <downloadurl type="full" format="zip">https://download.amultis.dev/joomla/modules/amu_ipinfo/${ZIP_NAME}</downloadurl>
-        </downloads>
-        <tags><tag>stable</tag></tags>
-        <maintainer>Amultis</maintainer>
-        <maintainerurl>https://amultis.dev</maintainerurl>
-        <targetplatform name="joomla" version="5.[0-9]+" />
-        <targetplatform name="joomla" version="6.[0-9]+" />
-        <php_minimum>8.1</php_minimum>
-    </update>
-</updates>
-XML
-            echo "update.xml written to $DEST"
+            DOWNLOAD_URL="https://download.amultis.dev/joomla/modules/amu_ipinfo/${ZIP_NAME}"
+            OUTPUT_PATH="${{ secrets.DEPLOY_PATH_UPDATES }}/joomla/modules/amu_ipinfo/update.xml"
+            VERSION="$VERSION" DOWNLOAD_URL="$DOWNLOAD_URL" OUTPUT_PATH="$OUTPUT_PATH"
+            python3 /tmp/amu_deploy/generate_update_xml.py
