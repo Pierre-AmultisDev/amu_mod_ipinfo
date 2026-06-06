@@ -5,6 +5,11 @@ on:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versienummer (bijv. 1.0.0 zonder v)'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -26,17 +31,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Extract version from tag
+      - name: Extract version
         id: meta
         run: |
-          # Controleer of dit een tag-trigger is
-          if [[ "${GITHUB_REF}" != refs/tags/v* ]]; then
-            echo "ERROR: workflow triggered by '${GITHUB_REF}', but only version tags (v*.*.*) are supported."
-            echo "Push a tag like: git tag v1.0.0 && git push origin v1.0.0"
-            exit 1
+          # Bij handmatige trigger: gebruik het ingevulde versienummer
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            # Bij tag-trigger: haal versie uit de tag (refs/tags/v1.0.0 → 1.0.0)
+            VERSION="${GITHUB_REF#refs/tags/v}"
           fi
-          VERSION="${GITHUB_REF#refs/tags/v}"
-          # Valideer dat het een geldig versienummer is (cijfers en punten)
+          # Valideer dat het een geldig versienummer is (X.Y.Z)
           if [[ ! "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "ERROR: '${VERSION}' is geen geldig versienummer (verwacht: X.Y.Z)"
             exit 1
