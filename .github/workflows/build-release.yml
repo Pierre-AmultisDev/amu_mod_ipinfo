@@ -29,7 +29,18 @@ jobs:
       - name: Extract version from tag
         id: meta
         run: |
+          # Controleer of dit een tag-trigger is
+          if [[ "${GITHUB_REF}" != refs/tags/v* ]]; then
+            echo "ERROR: workflow triggered by '${GITHUB_REF}', but only version tags (v*.*.*) are supported."
+            echo "Push a tag like: git tag v1.0.0 && git push origin v1.0.0"
+            exit 1
+          fi
           VERSION="${GITHUB_REF#refs/tags/v}"
+          # Valideer dat het een geldig versienummer is (cijfers en punten)
+          if [[ ! "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "ERROR: '${VERSION}' is geen geldig versienummer (verwacht: X.Y.Z)"
+            exit 1
+          fi
           ZIP_NAME="mod_amu_ipinfo_v${VERSION}.zip"
           echo "version=${VERSION}"   >> "$GITHUB_OUTPUT"
           echo "zip_name=${ZIP_NAME}" >> "$GITHUB_OUTPUT"
