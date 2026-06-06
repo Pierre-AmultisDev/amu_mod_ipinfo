@@ -97,10 +97,14 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .joomla/update.xml
-          git diff --staged --quiet \
-            && echo "No changes to commit" \
-            || git commit -m "chore: update.xml for v${{ needs.build.outputs.version }} [skip ci]"
-          git push origin HEAD:refs/heads/master
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update.xml for v${{ needs.build.outputs.version }} [skip ci]"
+            # Rebase op remote master zodat er nooit een merge conflict ontstaat
+            git pull --rebase origin master
+            git push origin HEAD:refs/heads/master
+          fi
 
   # ─────────────────────────────────────
   # Job 3: GitHub Release
