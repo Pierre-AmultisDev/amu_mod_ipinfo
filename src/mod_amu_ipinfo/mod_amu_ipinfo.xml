@@ -229,7 +229,7 @@
             https://update.amultis.dev/joomla/modules/amu_ipinfo/update.xml
         </server>
         <server type="extension" priority="2" name="GitHub Releases">
-            https://raw.githubusercontent.com/Pierre-AmultisDev/amu_mod_ipinfo/main/.joomla/update.xml
+            https://raw.githubusercontent.com/Pierre-AmultisDev/amu_mod_ipinfo/master/.joomla/update.xml
         </server>
     </updateservers>
 

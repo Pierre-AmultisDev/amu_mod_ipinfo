@@ -70,8 +70,10 @@ jobs:
           path: ${{ steps.meta.outputs.zip_name }}
           retention-days: 30
 
+
   # ─────────────────────────────────────
-  # Job 2: Commit updated .joomla/update.xml
+  # Job 2: Update .joomla/update.xml via GitHub API
+  # Geen git checkout/pull/push — voorkomt merge conflicten
   # ─────────────────────────────────────
   update_xml:
     name: Regenerate update.xml
@@ -79,28 +81,17 @@ jobs:
     needs: build
 
     steps:
-      - name: Checkout repository
+      - name: Checkout (voor het Python script)
         uses: actions/checkout@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           ref: master
 
-      - name: Generate .joomla/update.xml via Python script
+      - name: Push update.xml naar GitHub via API
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION:      ${{ needs.build.outputs.version }}
-          DOWNLOAD_URL: https://download.amultis.dev/joomla/modules/amu_ipinfo/${{ needs.build.outputs.zip_name }}
-          OUTPUT_PATH:  .joomla/update.xml
-        run: python3 .github/scripts/generate_update_xml.py
-
-      - name: Commit update.xml back to main
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .joomla/update.xml
-          git diff --staged --quiet \
-            && echo "No changes to commit" \
-            || git commit -m "chore: update.xml for v${{ needs.build.outputs.version }} [skip ci]"
-          git push origin HEAD:refs/heads/master
+          ZIP_NAME:     ${{ needs.build.outputs.zip_name }}
+        run: python3 .github/scripts/push_update_xml.py
 
   # ─────────────────────────────────────
   # Job 3: GitHub Release
@@ -164,6 +155,17 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           name: ${{ needs.build.outputs.zip_name }}
+
+      - name: Maak mappen aan op server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host:     ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key:      ${{ secrets.DEPLOY_SSH_KEY }}
+          port:     ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            mkdir -p "${{ secrets.DEPLOY_PATH_MODULES }}/amu_ipinfo"
+            mkdir -p "${{ secrets.DEPLOY_PATH_UPDATES }}/joomla/modules/amu_ipinfo"
 
       - name: Upload ZIP to download.amultis.dev via SCP
         uses: appleboy/scp-action@v0.1.7
