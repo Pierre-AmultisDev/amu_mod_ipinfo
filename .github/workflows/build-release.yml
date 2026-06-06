@@ -83,6 +83,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          ref: master
 
       - name: Generate .joomla/update.xml via Python script
         env:
@@ -99,7 +100,7 @@ jobs:
           git diff --staged --quiet \
             && echo "No changes to commit" \
             || git commit -m "chore: update.xml for v${{ needs.build.outputs.version }} [skip ci]"
-          git push
+          git push origin HEAD:refs/heads/master
 
   # ─────────────────────────────────────
   # Job 3: GitHub Release
