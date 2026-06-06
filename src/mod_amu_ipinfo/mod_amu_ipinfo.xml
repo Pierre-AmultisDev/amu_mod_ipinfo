@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" client="site" method="upgrade">
+    <name>MOD_AMU_IPINFO</name>
+    <element>mod_amu_ipinfo</element>
+    <author>Amultis</author>
+    <authorEmail>info@amultis.dev</authorEmail>
+    <authorUrl>https://amultis.dev</authorUrl>
+    <copyright>Copyright (C) 2024 Amultis. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later</license>
+    <version>1.0.0</version>
+    <creationDate>2024-01-01</creationDate>
+    <description>MOD_AMU_IPINFO_DESC</description>
+
+    <files>
+        <filename module="mod_amu_ipinfo">mod_amu_ipinfo.php</filename>
+        <filename>helper.php</filename>
+        <filename>mod_amu_ipinfo.xml</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <folder>media</folder>
+    </files>
+
+    <languages>
+        <language tag="en-GB">language/en-GB/mod_amu_ipinfo.ini</language>
+        <language tag="en-GB">language/en-GB/mod_amu_ipinfo.sys.ini</language>
+        <language tag="nl-NL">language/nl-NL/mod_amu_ipinfo.ini</language>
+        <language tag="nl-NL">language/nl-NL/mod_amu_ipinfo.sys.ini</language>
+    </languages>
+
+    <media destination="mod_amu_ipinfo" folder="media">
+        <filename>style.css</filename>
+    </media>
+
+    <config>
+        <fields name="params">
+
+            <!-- Display settings -->
+            <fieldset name="basic" label="MOD_AMU_IPINFO_FIELDSET_BASIC">
+
+                <field
+                    name="show_ip_version"
+                    type="radio"
+                    label="MOD_AMU_IPINFO_SHOW_VERSION"
+                    description="MOD_AMU_IPINFO_SHOW_VERSION_DESC"
+                    default="1"
+                    class="btn-group btn-group-yesno"
+                    layout="joomla.form.field.radio.switcher"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                    name="show_private_note"
+                    type="radio"
+                    label="MOD_AMU_IPINFO_SHOW_PRIVATE"
+                    description="MOD_AMU_IPINFO_SHOW_PRIVATE_DESC"
+                    default="1"
+                    class="btn-group btn-group-yesno"
+                    layout="joomla.form.field.radio.switcher"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                    name="show_copy_button"
+                    type="radio"
+                    label="MOD_AMU_IPINFO_SHOW_COPY"
+                    description="MOD_AMU_IPINFO_SHOW_COPY_DESC"
+                    default="1"
+                    class="btn-group btn-group-yesno"
+                    layout="joomla.form.field.radio.switcher"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+            </fieldset>
+
+            <!-- Geo IP settings -->
+            <fieldset name="geoip" label="MOD_AMU_IPINFO_FIELDSET_GEOIP">
+
+                <field
+                    name="show_geoip"
+                    type="radio"
+                    label="MOD_AMU_IPINFO_SHOW_GEOIP"
+                    description="MOD_AMU_IPINFO_SHOW_GEOIP_DESC"
+                    default="0"
+                    class="btn-group btn-group-yesno"
+                    layout="joomla.form.field.radio.switcher"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                    name="geoip_provider"
+                    type="list"
+                    label="MOD_AMU_IPINFO_GEOIP_PROVIDER"
+                    description="MOD_AMU_IPINFO_GEOIP_PROVIDER_DESC"
+                    default="ip-api"
+                    showon="show_geoip:1"
+                >
+                    <option value="ip-api">ip-api.com — Free, no key, 45 req/min</option>
+                    <option value="ipwhois">ipwhois.app — Free, no key, 10,000 req/month</option>
+                    <option value="ipapi-co">ipapi.co — Free, no key, 1,000 req/day</option>
+                    <option value="ipgeolocation">ipgeolocation.io — Free tier, API key required</option>
+                    <option value="abstractapi">abstractapi.com — Free, 20,000 req/month, API key required</option>
+                </field>
+
+                <field
+                    name="ipgeolocation_key"
+                    type="text"
+                    label="MOD_AMU_IPINFO_IPGEOLOCATION_KEY"
+                    description="MOD_AMU_IPINFO_IPGEOLOCATION_KEY_DESC"
+                    default=""
+                    showon="show_geoip:1[AND]geoip_provider:ipgeolocation"
+                    filter="string"
+                />
+
+                <field
+                    name="abstractapi_key"
+                    type="text"
+                    label="MOD_AMU_IPINFO_ABSTRACTAPI_KEY"
+                    description="MOD_AMU_IPINFO_ABSTRACTAPI_KEY_DESC"
+                    default=""
+                    showon="show_geoip:1[AND]geoip_provider:abstractapi"
+                    filter="string"
+                />
+
+                <field
+                    name="show_flag"
+                    type="radio"
+                    label="MOD_AMU_IPINFO_SHOW_FLAG"
+                    description="MOD_AMU_IPINFO_SHOW_FLAG_DESC"
+                    default="1"
+                    class="btn-group btn-group-yesno"
+                    layout="joomla.form.field.radio.switcher"
+                    showon="show_geoip:1"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                    name="show_map_link"
+                    type="radio"
+                    label="MOD_AMU_IPINFO_SHOW_MAP_LINK"
+                    description="MOD_AMU_IPINFO_SHOW_MAP_LINK_DESC"
+                    default="1"
+                    class="btn-group btn-group-yesno"
+                    layout="joomla.form.field.radio.switcher"
+                    showon="show_geoip:1"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                    name="show_isp"
+                    type="radio"
+                    label="MOD_AMU_IPINFO_SHOW_ISP"
+                    description="MOD_AMU_IPINFO_SHOW_ISP_DESC"
+                    default="1"
+                    class="btn-group btn-group-yesno"
+                    layout="joomla.form.field.radio.switcher"
+                    showon="show_geoip:1"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+            </fieldset>
+
+            <!-- Advanced settings -->
+            <fieldset name="advanced" label="MOD_AMU_IPINFO_FIELDSET_ADVANCED">
+
+                <field
+                    name="layout"
+                    type="modulelayout"
+                    label="JFIELD_ALT_LAYOUT_LABEL"
+                    description="JFIELD_ALT_LAYOUT_DESC"
+                    class="form-select"
+                />
+
+                <field
+                    name="moduleclass_sfx"
+                    type="textarea"
+                    label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
+                    description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC"
+                    rows="3"
+                />
+
+                <field
+                    name="cache"
+                    type="list"
+                    label="COM_MODULES_FIELD_CACHING_LABEL"
+                    description="COM_MODULES_FIELD_CACHING_DESC"
+                    default="0"
+                >
+                    <option value="1">JGLOBAL_USE_GLOBAL</option>
+                    <option value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
+                </field>
+
+                <field
+                    name="cache_time"
+                    type="number"
+                    label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
+                    description="COM_MODULES_FIELD_CACHE_TIME_DESC"
+                    default="900"
+                    filter="integer"
+                />
+
+                <field
+                    name="cachemode"
+                    type="hidden"
+                    default="itemid"
+                />
+
+            </fieldset>
+
+        </fields>
+    </config>
+
+    <!-- Update servers: GitHub Releases + private update server -->
+    <updateservers>
+        <server type="extension" priority="1" name="Amultis Update Server">
+            https://update.amultis.dev/joomla/modules/amu_ipinfo/update.xml
+        </server>
+        <server type="extension" priority="2" name="GitHub Releases">
+            https://raw.githubusercontent.com/Pierre-AmultisDev/amu_mod_ipinfo/main/.joomla/update.xml
+        </server>
+    </updateservers>
+
+</extension>

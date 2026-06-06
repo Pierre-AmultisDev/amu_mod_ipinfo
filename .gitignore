@@ -1,0 +1,16 @@
+# Build output — never commit generated ZIPs
+*.zip
+*.tar.gz
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# PHP / Composer (not used here but safe to include)
+vendor/
+composer.lock

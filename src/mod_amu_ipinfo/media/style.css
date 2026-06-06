@@ -1,0 +1,258 @@
+/**
+ * mod_ipinfo — Stylesheet
+ * @copyright  Copyright (C) 2024 Amultis. All rights reserved.
+ * @license    GNU General Public License version 2 or later
+ */
+
+/* ─── Root variables (override in your template) ─── */
+.mod-ipinfo {
+    --ipinfo-bg:          #f8fafc;
+    --ipinfo-border:      #e2e8f0;
+    --ipinfo-radius:      0.75rem;
+    --ipinfo-text:        #1e293b;
+    --ipinfo-muted:       #64748b;
+    --ipinfo-accent:      #3b82f6;
+    --ipinfo-accent-dark: #1d4ed8;
+    --ipinfo-ip-size:     1.375rem;
+    --ipinfo-font:        ui-monospace, 'Cascadia Code', 'Fira Mono', monospace;
+    --ipinfo-ui-font:     system-ui, -apple-system, sans-serif;
+    --ipinfo-v4-color:    #0891b2;
+    --ipinfo-v6-color:    #7c3aed;
+    --ipinfo-shadow:      0 1px 3px rgb(0 0 0 / .08), 0 1px 2px rgb(0 0 0 / .06);
+
+    padding: 1.25rem 1.5rem;
+    background: var(--ipinfo-bg);
+    border: 1px solid var(--ipinfo-border);
+    border-radius: var(--ipinfo-radius);
+    box-shadow: var(--ipinfo-shadow);
+    font-family: var(--ipinfo-ui-font);
+    color: var(--ipinfo-text);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    .mod-ipinfo {
+        --ipinfo-bg:     #1e293b;
+        --ipinfo-border: #334155;
+        --ipinfo-text:   #f1f5f9;
+        --ipinfo-muted:  #94a3b8;
+        --ipinfo-shadow: 0 1px 3px rgb(0 0 0 / .3);
+    }
+}
+
+/* ─── IP block ─── */
+.mod-ipinfo__label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ipinfo-muted);
+    margin-bottom: 0.35rem;
+}
+
+.mod-ipinfo__ip-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.mod-ipinfo__ip-address {
+    font-family: var(--ipinfo-font);
+    font-size: var(--ipinfo-ip-size);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ipinfo-text);
+    word-break: break-all;
+}
+
+/* ─── Version badge ─── */
+.mod-ipinfo__version-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.mod-ipinfo__version-badge--ipv4 {
+    background: color-mix(in srgb, var(--ipinfo-v4-color) 12%, transparent);
+    color: var(--ipinfo-v4-color);
+    border: 1px solid color-mix(in srgb, var(--ipinfo-v4-color) 30%, transparent);
+}
+
+.mod-ipinfo__version-badge--ipv6 {
+    background: color-mix(in srgb, var(--ipinfo-v6-color) 12%, transparent);
+    color: var(--ipinfo-v6-color);
+    border: 1px solid color-mix(in srgb, var(--ipinfo-v6-color) 30%, transparent);
+}
+
+/* ─── Copy button ─── */
+.mod-ipinfo__copy-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    background: transparent;
+    border: 1px solid var(--ipinfo-border);
+    border-radius: 0.375rem;
+    cursor: pointer;
+    color: var(--ipinfo-muted);
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    flex-shrink: 0;
+    margin-left: 0.25rem;
+}
+
+.mod-ipinfo__copy-btn svg {
+    width: 0.875rem;
+    height: 0.875rem;
+    pointer-events: none;
+}
+
+.mod-ipinfo__copy-btn:hover {
+    background: color-mix(in srgb, var(--ipinfo-accent) 8%, transparent);
+    border-color: var(--ipinfo-accent);
+    color: var(--ipinfo-accent);
+}
+
+.mod-ipinfo__copy-btn--copied {
+    background: color-mix(in srgb, #16a34a 10%, transparent);
+    border-color: #16a34a;
+    color: #16a34a;
+}
+
+/* ─── Notices ─── */
+.mod-ipinfo__notice {
+    margin-top: 0.6rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+}
+
+.mod-ipinfo__notice--private {
+    background: color-mix(in srgb, #f59e0b 10%, transparent);
+    border: 1px solid color-mix(in srgb, #f59e0b 30%, transparent);
+    color: #92400e;
+}
+
+@media (prefers-color-scheme: dark) {
+    .mod-ipinfo__notice--private {
+        color: #fcd34d;
+    }
+}
+
+.mod-ipinfo__notice--error {
+    background: color-mix(in srgb, #ef4444 10%, transparent);
+    border: 1px solid color-mix(in srgb, #ef4444 30%, transparent);
+    color: #991b1b;
+}
+
+@media (prefers-color-scheme: dark) {
+    .mod-ipinfo__notice--error {
+        color: #fca5a5;
+    }
+}
+
+/* ─── Geo block ─── */
+.mod-ipinfo__geo-block {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--ipinfo-border);
+}
+
+.mod-ipinfo__geo-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.mod-ipinfo__flag {
+    display: inline-block;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / .1);
+    flex-shrink: 0;
+}
+
+.mod-ipinfo__geo-location {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--ipinfo-text);
+}
+
+/* ─── Geo detail rows ─── */
+.mod-ipinfo__geo-details {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.mod-ipinfo__geo-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--ipinfo-border) 60%, transparent);
+}
+
+.mod-ipinfo__geo-row:last-child {
+    border-bottom: none;
+}
+
+.mod-ipinfo__geo-row dt {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--ipinfo-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.mod-ipinfo__geo-row dd {
+    font-size: 0.8125rem;
+    color: var(--ipinfo-text);
+    text-align: right;
+    word-break: break-all;
+    margin: 0;
+}
+
+/* ─── Map link ─── */
+.mod-ipinfo__map-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    color: var(--ipinfo-accent);
+    text-decoration: none;
+    font-family: var(--ipinfo-font);
+    font-size: 0.75rem;
+}
+
+.mod-ipinfo__map-link svg {
+    width: 0.7rem;
+    height: 0.7rem;
+    flex-shrink: 0;
+}
+
+.mod-ipinfo__map-link:hover {
+    color: var(--ipinfo-accent-dark);
+    text-decoration: underline;
+}
+
+/* ─── Provider attribution ─── */
+.mod-ipinfo__provider-note {
+    margin-top: 0.6rem;
+    font-size: 0.6875rem;
+    color: var(--ipinfo-muted);
+    text-align: right;
+}
