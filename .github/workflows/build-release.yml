@@ -92,6 +92,23 @@ jobs:
           VERSION:      ${{ needs.build.outputs.version }}
           ZIP_NAME:     ${{ needs.build.outputs.zip_name }}
         run: python3 .github/scripts/push_update_xml.py
+          DOWNLOAD_URL: https://download.amultis.dev/joomla/modules/amu_ipinfo/${{ needs.build.outputs.zip_name }}
+          OUTPUT_PATH:  .joomla/update.xml
+        run: python3 .github/scripts/generate_update_xml.py
+
+      - name: Commit update.xml back to main
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .joomla/update.xml
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update.xml for v${{ needs.build.outputs.version }} [skip ci]"
+            # Rebase op remote master zodat er nooit een merge conflict ontstaat
+            git pull --rebase origin master
+            git push origin HEAD:refs/heads/master
+          fi
 
   # ─────────────────────────────────────
   # Job 3: GitHub Release
