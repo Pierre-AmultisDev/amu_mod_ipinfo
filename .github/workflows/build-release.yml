@@ -205,8 +205,8 @@ jobs:
                     <tags><tag>stable</tag></tags>
                     <maintainer>pierre@amultis.eu</maintainer>
                     <maintainerurl>https://amultis.eu</maintainerurl>
-                    <targetplatform name="joomla" version="5.[0-9]+" />
-                    <targetplatform name="joomla" version="6.[0-9]+" />
+                    <targetplatform name="joomla" version="5.*" />
+                    <targetplatform name="joomla" version="6.*" />
                     <php_minimum>8.1</php_minimum>
                 </update>
             </updates>
