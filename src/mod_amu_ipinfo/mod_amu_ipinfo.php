@@ -11,6 +11,8 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Helper\ModuleHelper;
 
+require_once __DIR__ . '/helper.php';
+
 /** @var \Joomla\CMS\WebAsset\WebAssetManager $wa */
 $wa = $app->getDocument()->getWebAssetManager();
 $wa->registerAndUseStyle('mod_amu_ipinfo', 'mod_amu_ipinfo/style.css');
