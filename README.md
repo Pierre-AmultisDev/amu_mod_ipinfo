@@ -113,8 +113,8 @@ Configure these under **Settings → Secrets and variables → Actions**:
 | `DEPLOY_USER` | SSH username |
 | `DEPLOY_SSH_KEY` | Private SSH key (RSA or Ed25519) |
 | `DEPLOY_PORT` | SSH port (default: 22) |
-| `DEPLOY_PATH_MODULES` | Base path for downloads, e.g. `/var/www/download.amultis.dev/joomla/modules` or `/domains/amultis.dev/public_html/downnload/joomla/modules/amu_ipinfo` |
-| `DEPLOY_PATH_UPDATES` | Base path for update XMLs, e.g. `/var/www/update.amultis.dev` or `/domains/amultis.dev/public_html/update/joomla/modules/amu_ipinfo` |
+| `DEPLOY_PATH_MODULES` | Base path for downloads, e.g. `/var/www/download.amultis.dev/joomla/modules` or `domains/amultis.dev/public_html/downnload/joomla/modules/amu_ipinfo` |
+| `DEPLOY_PATH_UPDATES` | Base path for update XMLs, e.g. `/var/www/update.amultis.dev` or `domains/amultis.dev/public_html/update/joomla/modules/amu_ipinfo` |
 
 ---
 
