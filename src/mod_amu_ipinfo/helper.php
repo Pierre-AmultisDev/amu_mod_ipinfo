@@ -150,6 +150,9 @@ class ModAmuIPInfoHelper
                     $url = "http://ip-api.com/json/{$ip}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query";
                     $response = $http->get($url, [], $timeout);
                     $body = json_decode($response->body, true);
+                    if (!is_array($body)) {
+                        return [null, 'Invalid response from ip-api.com'];
+                    }
                     if (($body['status'] ?? '') === 'success') {
                         return [self::normalizeGeoData($body, 'ip-api'), null];
                     }
@@ -160,6 +163,9 @@ class ModAmuIPInfoHelper
                     $url = "https://ipwhois.app/json/{$ip}";
                     $response = $http->get($url, [], $timeout);
                     $body = json_decode($response->body, true);
+                    if (!is_array($body)) {
+                        return [null, 'Invalid response from ipwhois.app'];
+                    }
                     if ($body['success'] ?? false) {
                         return [self::normalizeGeoData($body, 'ipwhois'), null];
                     }
@@ -170,6 +176,9 @@ class ModAmuIPInfoHelper
                     $url = "https://ipapi.co/{$ip}/json/";
                     $response = $http->get($url, [], $timeout);
                     $body = json_decode($response->body, true);
+                    if (!is_array($body)) {
+                        return [null, 'Invalid response from ipapi.co'];
+                    }
                     if (!isset($body['error'])) {
                         return [self::normalizeGeoData($body, 'ipapi-co'), null];
                     }
@@ -184,6 +193,9 @@ class ModAmuIPInfoHelper
                     $url = "https://api.ipgeolocation.io/ipgeo?apiKey={$apiKey}&ip={$ip}";
                     $response = $http->get($url, [], $timeout);
                     $body = json_decode($response->body, true);
+                    if (!is_array($body)) {
+                        return [null, 'Invalid response from ipgeolocation.io'];
+                    }
                     if (!isset($body['message'])) {
                         return [self::normalizeGeoData($body, 'ipgeolocation'), null];
                     }
@@ -198,6 +210,9 @@ class ModAmuIPInfoHelper
                     $url = "https://ipgeolocation.abstractapi.com/v1/?api_key={$apiKey}&ip_address={$ip}";
                     $response = $http->get($url, [], $timeout);
                     $body = json_decode($response->body, true);
+                    if (!is_array($body)) {
+                        return [null, 'Invalid response from abstractapi.com'];
+                    }
                     if (!isset($body['error'])) {
                         return [self::normalizeGeoData($body, 'abstractapi'), null];
                     }
