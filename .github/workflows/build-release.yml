@@ -164,8 +164,8 @@ jobs:
           key:      ${{ secrets.DEPLOY_SSH_KEY }}
           port:     ${{ secrets.DEPLOY_PORT || 22 }}
           script: |
-            mkdir -p "${{ secrets.DEPLOY_PATH_MODULES }}/amu_ipinfo"
-            mkdir -p "${{ secrets.DEPLOY_PATH_UPDATES }}/joomla/modules/amu_ipinfo"
+            mkdir -p "${{ secrets.DEPLOY_PATH_MODULES }}"
+            mkdir -p "${{ secrets.DEPLOY_PATH_UPDATES }}"
 
       - name: Upload ZIP to download.amultis.dev via SCP
         uses: appleboy/scp-action@v0.1.7
@@ -175,7 +175,7 @@ jobs:
           key:      ${{ secrets.DEPLOY_SSH_KEY }}
           port:     ${{ secrets.DEPLOY_PORT || 22 }}
           source:   ${{ needs.build.outputs.zip_name }}
-          target:   ${{ secrets.DEPLOY_PATH_MODULES }}/amu_ipinfo/
+          target:   ${{ secrets.DEPLOY_PATH_MODULES }}/
 
       - name: Write update.xml on update.amultis.dev via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -186,7 +186,7 @@ jobs:
           port:     ${{ secrets.DEPLOY_PORT || 22 }}
           script: |
             set -e
-            DEST="${{ secrets.DEPLOY_PATH_UPDATES }}/joomla/modules/amu_ipinfo"
+            DEST="${{ secrets.DEPLOY_PATH_UPDATES }}"
             mkdir -p "${DEST}"
             cat > "${DEST}/update.xml" << 'XML'
             <?xml version="1.0" encoding="utf-8"?>
