@@ -2,13 +2,13 @@
 <extension type="module" client="site" method="upgrade">
     <name>MOD_AMU_IPINFO</name>
     <element>mod_amu_ipinfo</element>
-    <author>Amultis</author>
-    <authorEmail>info@amultis.dev</authorEmail>
-    <authorUrl>https://amultis.dev</authorUrl>
-    <copyright>Copyright (C) 2024 Amultis. All rights reserved.</copyright>
+    <author>aMultis</author>
+    <authorEmail>pierre@amultis.eu</authorEmail>
+    <authorUrl>https://amultis.eu</authorUrl>
+    <copyright>Copyright (C) aMultis. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later</license>
-    <version>0.0.5</version>
-    <creationDate>2024-01-01</creationDate>
+    <version>0.0.7</version>
+    <creationDate>2026-07-06</creationDate>
     <description>MOD_AMU_IPINFO_DESC</description>
 
     <files>
@@ -225,10 +225,10 @@
 
     <!-- Update servers: GitHub Releases + private update server -->
     <updateservers>
-        <server type="extension" priority="1" name="Amultis Update Server">
+        <server type="extension" priority="1" name="Amultis Update Server for IP Info">
             https://update.amultis.dev/joomla/modules/amu_ipinfo/update.xml
         </server>
-        <server type="extension" priority="2" name="GitHub Releases">
+        <server type="extension" priority="2" name="GitHub Releases for IP Info">
             https://raw.githubusercontent.com/Pierre-AmultisDev/amu_mod_ipinfo/master/joomla/update.xml
         </server>
     </updateservers>
