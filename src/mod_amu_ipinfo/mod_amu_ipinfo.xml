@@ -7,7 +7,7 @@
     <authorUrl>https://amultis.dev</authorUrl>
     <copyright>Copyright (C) 2024 Amultis. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later</license>
-    <version>1.0.0</version>
+    <version>0.0.4</version>
     <creationDate>2024-01-01</creationDate>
     <description>MOD_AMU_IPINFO_DESC</description>
 
@@ -229,7 +229,7 @@
             https://update.amultis.dev/joomla/modules/amu_ipinfo/update.xml
         </server>
         <server type="extension" priority="2" name="GitHub Releases">
-            https://raw.githubusercontent.com/Pierre-AmultisDev/amu_mod_ipinfo/master/.joomla/update.xml
+            https://raw.githubusercontent.com/Pierre-AmultisDev/amu_mod_ipinfo/master/joomla/update.xml
         </server>
     </updateservers>
 

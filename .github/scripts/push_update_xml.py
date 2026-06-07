@@ -18,7 +18,7 @@ import urllib.error
 from datetime import datetime, timezone
 
 REPO   = "Pierre-AmultisDev/amu_mod_ipinfo"
-PATH   = ".joomla/update.xml"
+PATH   = "joomla/update.xml"
 BRANCH = "master"
 
 token    = os.environ.get("GITHUB_TOKEN", "").strip()
