@@ -177,16 +177,6 @@ jobs:
           source:   ${{ needs.build.outputs.zip_name }}
           target:   ${{ secrets.DEPLOY_PATH_MODULES }}/amu_ipinfo/
 
-      - name: Upload scripts naar server via SCP
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host:     ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key:      ${{ secrets.DEPLOY_SSH_KEY }}
-          port:     ${{ secrets.DEPLOY_PORT || 22 }}
-          source:   .github/scripts/generate_update_xml.py,.github/scripts/deploy_update_xml.sh
-          target:   /tmp/amu_deploy/
-
       - name: Write update.xml on update.amultis.dev via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -194,9 +184,36 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key:      ${{ secrets.DEPLOY_SSH_KEY }}
           port:     ${{ secrets.DEPLOY_PORT || 22 }}
-          envs:     VERSION,ZIP_NAME,UPDATES_PATH
           script: |
-            export VERSION="${{ needs.build.outputs.version }}"
-            export ZIP_NAME="${{ needs.build.outputs.zip_name }}"
-            export UPDATES_PATH="${{ secrets.DEPLOY_PATH_UPDATES }}"
-            bash /tmp/amu_deploy/.github/scripts/deploy_update_xml.sh
+            set -e
+            DEST="${{ secrets.DEPLOY_PATH_UPDATES }}/joomla/modules/amu_ipinfo"
+            mkdir -p "${DEST}"
+            cat > "${DEST}/update.xml" << 'XML'
+            <?xml version="1.0" encoding="utf-8"?>
+            <updates>
+                <update>
+                    <name>aMultis IP Info</name>
+                    <description>Displays the visitor IP address (IPv4 / IPv6) with optional Geo IP lookup.</description>
+                    <element>mod_amu_ipinfo</element>
+                    <type>module</type>
+                    <client>site</client>
+                    <version>VERSION_PLACEHOLDER</version>
+                    <infourl title="aMultis IP Info">https://github.com/Pierre-AmultisDev/amu_mod_ipinfo</infourl>
+                    <downloads>
+                        <downloadurl type="full" format="zip">URL_PLACEHOLDER</downloadurl>
+                    </downloads>
+                    <tags><tag>stable</tag></tags>
+                    <maintainer>pierre@amultis.eu</maintainer>
+                    <maintainerurl>https://amultis.eu</maintainerurl>
+                    <targetplatform name="joomla" version="5.[0-9]+" />
+                    <targetplatform name="joomla" version="6.[0-9]+" />
+                    <php_minimum>8.1</php_minimum>
+                </update>
+            </updates>
+            XML
+            VERSION="${{ needs.build.outputs.version }}"
+            ZIP_NAME="${{ needs.build.outputs.zip_name }}"
+            DOWNLOAD_URL="https://download.amultis.dev/joomla/modules/amu_ipinfo/${ZIP_NAME}"
+            sed -i "s|VERSION_PLACEHOLDER|${VERSION}|g" "${DEST}/update.xml"
+            sed -i "s|URL_PLACEHOLDER|${DOWNLOAD_URL}|g" "${DEST}/update.xml"
+            echo "update.xml geschreven naar ${DEST}/update.xml"
