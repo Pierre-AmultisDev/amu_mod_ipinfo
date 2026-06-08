@@ -7,7 +7,7 @@
     <authorUrl>https://amultis.eu</authorUrl>
     <copyright>Copyright (C) aMultis. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later</license>
-    <version>0.0.12</version>
+    <version>0.0.13</version>
     <creationDate>2026-06-08</creationDate>
     <description>MOD_AMU_IPINFO_DESC</description>
 
@@ -44,7 +44,6 @@
                     description="MOD_AMU_IPINFO_SHOW_VERSION_DESC"
                     default="1"
                     class="btn-group btn-group-yesno"
-                    layout="joomla.form.field.radio.switcher"
                 >
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
@@ -57,7 +56,6 @@
                     description="MOD_AMU_IPINFO_SHOW_PRIVATE_DESC"
                     default="1"
                     class="btn-group btn-group-yesno"
-                    layout="joomla.form.field.radio.switcher"
                 >
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
@@ -70,7 +68,6 @@
                     description="MOD_AMU_IPINFO_SHOW_COPY_DESC"
                     default="1"
                     class="btn-group btn-group-yesno"
-                    layout="joomla.form.field.radio.switcher"
                 >
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
@@ -88,7 +85,6 @@
                     description="MOD_AMU_IPINFO_SHOW_GEOIP_DESC"
                     default="0"
                     class="btn-group btn-group-yesno"
-                    layout="joomla.form.field.radio.switcher"
                 >
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
@@ -136,7 +132,6 @@
                     description="MOD_AMU_IPINFO_SHOW_FLAG_DESC"
                     default="1"
                     class="btn-group btn-group-yesno"
-                    layout="joomla.form.field.radio.switcher"
                     showon="show_geoip:1"
                 >
                     <option value="1">JYES</option>
@@ -150,7 +145,6 @@
                     description="MOD_AMU_IPINFO_SHOW_MAP_LINK_DESC"
                     default="1"
                     class="btn-group btn-group-yesno"
-                    layout="joomla.form.field.radio.switcher"
                     showon="show_geoip:1"
                 >
                     <option value="1">JYES</option>
@@ -164,7 +158,6 @@
                     description="MOD_AMU_IPINFO_SHOW_ISP_DESC"
                     default="1"
                     class="btn-group btn-group-yesno"
-                    layout="joomla.form.field.radio.switcher"
                     showon="show_geoip:1"
                 >
                     <option value="1">JYES</option>
