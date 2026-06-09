@@ -19,5 +19,15 @@
             <item>Release 0.0.16</item>
         </note>
     </changelog>
+
+    <changelog>
+        <element>mod_amu_ipinfo</element>
+        <type>module</type>
+        <version>0.0.17</version>
+        <change>
+            <item>Merge branch 'master' of github.com:Pierre-AmultisDev/amu_mod_ipinfo</item>
+        </change>
+    </changelog>
 </changelogs>
+
 
