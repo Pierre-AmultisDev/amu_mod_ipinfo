@@ -37,7 +37,17 @@
             <item>Release 0.0.18</item>
         </note>
     </changelog>
+
+    <changelog>
+        <element>mod_amu_ipinfo</element>
+        <type>module</type>
+        <version>0.0.19</version>
+        <change>
+            <item>removed clutter</item>
+        </change>
+    </changelog>
 </changelogs>
+
 
 
 
