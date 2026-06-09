@@ -39,7 +39,7 @@ The module registers two update servers. Joomla will notify you of new versions 
 | Priority | URL |
 |---|---|
 | 1 — primary | `https://update.amultis.dev/joomla/modules/amu_ipinfo/update.xml` |
-| 2 — fallback | `https://raw.githubusercontent.com/Pierre-AmultisDev/amu_mod_ipinfo/main/update/update.xml` |
+| 2 — fallback | `https://raw.githubusercontent.com/Pierre-AmultisDev/amu_mod_ipinfo/master/update/update.xml` |
 
 ---
 
