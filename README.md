@@ -39,7 +39,7 @@ The module registers two update servers. Joomla will notify you of new versions 
 | Priority | URL |
 |---|---|
 | 1 — primary | `https://update.amultis.dev/joomla/modules/amu_ipinfo/update.xml` |
-| 2 — fallback | `https://raw.githubusercontent.com/Pierre-AmultisDev/amu_mod_ipinfo/main/.joomla/update.xml` |
+| 2 — fallback | `https://raw.githubusercontent.com/Pierre-AmultisDev/amu_mod_ipinfo/main/update/update.xml` |
 
 ---
 
@@ -98,7 +98,7 @@ git push origin main --tags
 GitHub Actions will automatically:
 1. Patch the version number in `mod_amu_ipinfo.xml`
 2. Build `mod_amu_ipinfo_v1.2.3.zip`
-3. Regenerate `.joomla/update.xml` and commit it back
+3. Regenerate `update/update.xml` and commit it back
 4. Create a GitHub Release with the ZIP attached
 5. Upload the ZIP to `download.amultis.dev` via SSH
 6. Write the new `update.xml` to `update.amultis.dev` via SSH
