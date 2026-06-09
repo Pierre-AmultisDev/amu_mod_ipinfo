@@ -26,6 +26,7 @@ jobs:
     outputs:
       version:  ${{ steps.meta.outputs.version }}
       zip_name: ${{ steps.meta.outputs.zip_name }}
+      prev_tag: ${{ steps.meta.outputs.prev_tag }}
 
     steps:
       - name: Checkout repository
@@ -47,9 +48,12 @@ jobs:
             exit 1
           fi
           ZIP_NAME="mod_amu_ipinfo_v${VERSION}.zip"
+          # Bepaal de vorige release tag voor de changelog
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
           echo "version=${VERSION}"   >> "$GITHUB_OUTPUT"
           echo "zip_name=${ZIP_NAME}" >> "$GITHUB_OUTPUT"
-          echo "Version: ${VERSION} | ZIP: ${ZIP_NAME}"
+          echo "prev_tag=${PREV_TAG}" >> "$GITHUB_OUTPUT"
+          echo "Version: ${VERSION} | ZIP: ${ZIP_NAME} | Prev tag: ${PREV_TAG}"
 
       - name: Patch version into mod_amu_ipinfo.xml
         run: |
@@ -72,7 +76,7 @@ jobs:
 
 
   # ─────────────────────────────────────
-  # Job 2: Update .joomla/update.xml via GitHub API
+  # Job 2: Update .update/update.xml via GitHub API
   # Geen git checkout/pull/push — voorkomt merge conflicten
   # ─────────────────────────────────────
   update_xml:
@@ -86,12 +90,13 @@ jobs:
         with:
           ref: master
 
-      - name: Push update.xml naar GitHub via API
+      - name: Push update.xml en changelog.xml naar GitHub via API
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION:      ${{ needs.build.outputs.version }}
           ZIP_NAME:     ${{ needs.build.outputs.zip_name }}
-        run: python3 .github/scripts/push_update_xml.py
+          PREV_TAG:     ${{ needs.build.outputs.prev_tag }}
+        run: python3 .github/scripts/update_xml.py --github
 
   # ─────────────────────────────────────
   # Job 3: GitHub Release
@@ -177,7 +182,18 @@ jobs:
           source:   ${{ needs.build.outputs.zip_name }}
           target:   ${{ secrets.DEPLOY_PATH_MODULES }}/
 
-      - name: Write update.xml on update.amultis.dev via SSH
+      - name: Upload update_xml.py naar server via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host:     ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key:      ${{ secrets.DEPLOY_SSH_KEY }}
+          port:     ${{ secrets.DEPLOY_PORT || 22 }}
+          source:   .github/scripts/update_xml.py
+          target:   /tmp/amu_deploy/
+          strip_components: 2
+
+      - name: Genereer en upload update/ bestanden naar server via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host:     ${{ secrets.DEPLOY_HOST }}
@@ -185,35 +201,19 @@ jobs:
           key:      ${{ secrets.DEPLOY_SSH_KEY }}
           port:     ${{ secrets.DEPLOY_PORT || 22 }}
           script: |
-            set -e
-            DEST="${{ secrets.DEPLOY_PATH_UPDATES }}"
-            mkdir -p "${DEST}"
-            cat > "${DEST}/update.xml" << 'XML'
-            <?xml version="1.0" encoding="utf-8"?>
-            <updates>
-                <update>
-                    <name>aMultis IP Info</name>
-                    <description>Displays the visitor IP address (IPv4 / IPv6) with optional Geo IP lookup.</description>
-                    <element>mod_amu_ipinfo</element>
-                    <type>module</type>
-                    <client>site</client>
-                    <version>VERSION_PLACEHOLDER</version>
-                    <infourl title="aMultis IP Info">https://github.com/Pierre-AmultisDev/amu_mod_ipinfo</infourl>
-                    <downloads>
-                        <downloadurl type="full" format="zip">URL_PLACEHOLDER</downloadurl>
-                    </downloads>
-                    <tags><tag>stable</tag></tags>
-                    <maintainer>pierre@amultis.eu</maintainer>
-                    <maintainerurl>https://amultis.eu</maintainerurl>
-                    <targetplatform name="joomla" version="5.*" />
-                    <targetplatform name="joomla" version="6.*" />
-                    <php_minimum>8.1</php_minimum>
-                </update>
-            </updates>
-            XML
-            VERSION="${{ needs.build.outputs.version }}"
-            ZIP_NAME="${{ needs.build.outputs.zip_name }}"
-            DOWNLOAD_URL="https://download.amultis.dev/joomla/modules/amu_ipinfo/${ZIP_NAME}"
-            sed -i "s|VERSION_PLACEHOLDER|${VERSION}|g" "${DEST}/update.xml"
-            sed -i "s|URL_PLACEHOLDER|${DOWNLOAD_URL}|g" "${DEST}/update.xml"
-            echo "update.xml geschreven naar ${DEST}/update.xml"
+            export VERSION="${{ needs.build.outputs.version }}"
+            export ZIP_NAME="${{ needs.build.outputs.zip_name }}"
+            export OUTPUT_PATH="${{ secrets.DEPLOY_PATH_UPDATES }}/update.xml"
+            export CHANGELOG_OUTPUT_PATH="${{ secrets.DEPLOY_PATH_UPDATES }}/changelog.xml"
+            python3 /tmp/amu_deploy/update_xml.py --file
+
+      - name: Kopieer index.html naar update server via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host:     ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key:      ${{ secrets.DEPLOY_SSH_KEY }}
+          port:     ${{ secrets.DEPLOY_PORT || 22 }}
+          source:   update/index.html
+          target:   ${{ secrets.DEPLOY_PATH_UPDATES }}/
+          strip_components: 1
