@@ -38,8 +38,8 @@ The module registers two update servers. Joomla will notify you of new versions 
 
 | Priority | URL |
 |---|---|
-| 1 — primary | `https://update.amultis.dev/joomla/modules/amu_ipinfo/update.xml` |
-| 2 — fallback | `https://raw.githubusercontent.com/Pierre-AmultisDev/amu_mod_ipinfo/master/update/update.xml` |
+| 1 — primary | [update.amultis.dev](https://update.amultis.dev/joomla/modules/amu_ipinfo/update.xml) |
+| 2 — fallback |[github](https://raw.githubusercontent.com/Pierre-AmultisDev/amu_mod_ipinfo/master/update/update.xml) |
 
 ---
 
@@ -60,9 +60,11 @@ The module registers two update servers. Joomla will notify you of new versions 
 ```
 amu_mod_ipinfo/
 ├── .github/
+│   ├── scripts/
+│   │   └── udate_xml.py        # CI: ZIP + update.xml + GitHub Release + deploy
 │   └── workflows/
 │       └── build-release.yml   # CI: ZIP + update.xml + GitHub Release + deploy
-├── .joomla/
+├── update/
 │   └── update.xml              # Auto-updated by CI — Joomla fallback update server
 ├── src/
 │   └── mod_amu_ipinfo/         # All installable module source files
