@@ -46,7 +46,17 @@
             <item>removed clutter</item>
         </change>
     </changelog>
+
+    <changelog>
+        <element>mod_amu_ipinfo</element>
+        <type>module</type>
+        <version>0.0.20</version>
+        <change>
+            <item>added/updated comment in READ.me</item>
+        </change>
+    </changelog>
 </changelogs>
+
 
 
 
