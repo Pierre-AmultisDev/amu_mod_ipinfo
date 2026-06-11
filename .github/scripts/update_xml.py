@@ -301,6 +301,36 @@ def mode_github(version: str, zip_name: str, prev_tag: str):
         clog_sha, GITHUB_BRANCH
     )
 
+    # ── mod_amu_ipinfo.xml versienummer bijwerken ───────────────────────────
+    if os.environ.get('PATCH_MANIFEST', '').lower() == 'true':
+        print(f"\nPatch versienummer in src/mod_amu_ipinfo/mod_amu_ipinfo.xml...")
+        manifest_path = "src/mod_amu_ipinfo/mod_amu_ipinfo.xml"
+        manifest_api  = f'{base_url}/{manifest_path}'
+
+        try:
+            manifest_content, manifest_sha = github_get_file(manifest_api, headers)
+            if manifest_content:
+                import re
+                updated = re.sub(
+                    r'<version>.*?</version>',
+                    f'<version>{version}</version>',
+                    manifest_content,
+                    count=1
+                )
+                if updated != manifest_content:
+                    github_put_file(
+                        manifest_api, headers, updated,
+                        f'chore: bump version to {version} in mod_amu_ipinfo.xml [skip ci]',
+                        manifest_sha, GITHUB_BRANCH
+                    )
+                    print(f"  mod_amu_ipinfo.xml bijgewerkt naar versie {version}")
+                else:
+                    print(f"  mod_amu_ipinfo.xml: versie was al {version}")
+            else:
+                print("  WAARSCHUWING: mod_amu_ipinfo.xml niet gevonden op GitHub", file=sys.stderr)
+        except Exception as e:
+            print(f"  WAARSCHUWING: kon manifest niet patchen: {e}", file=sys.stderr)
+
     print(f"\nKlaar! update.xml en changelog.xml bijgewerkt voor v{version}.")
 
 

@@ -98,6 +98,13 @@ jobs:
           PREV_TAG:     ${{ needs.build.outputs.prev_tag }}
         run: python3 .github/scripts/update_xml.py --github
 
+      - name: Patch versienummer in mod_amu_ipinfo.xml via GitHub API
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION:      ${{ needs.build.outputs.version }}
+          PATCH_MANIFEST: "true"
+        run: python3 .github/scripts/update_xml.py --github
+
   # ─────────────────────────────────────
   # Job 3: GitHub Release
   # ─────────────────────────────────────
