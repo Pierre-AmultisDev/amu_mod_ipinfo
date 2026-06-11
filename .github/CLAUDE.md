@@ -31,7 +31,7 @@ workflows/build-release.yml
 
 ## Rules:
 
-* Do not manually edit generated update.xml files.
+* Do not manually edit generated update.xml and changelog.xml files.
 * Preserve release workflow compatibility.
 * Preserve semantic versioning.
 * Preserve GitHub Release generation.
@@ -44,6 +44,11 @@ workflows/build-release.yml
 * Ensure update server URLs remain correct.
 * Ensure update_xml.py continues to function.
 
+## Changelog text:
+
+* Find the difference between the previous release and the current release. Create a summary and add it to the CHANGELOG.md file including the release version
+* Add that same summary to the changelog.xml file using the required changelog.xml syntax.
+---
 ## Testing Checklist
 
 Before release:

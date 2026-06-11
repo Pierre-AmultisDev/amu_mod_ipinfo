@@ -129,7 +129,6 @@ Whenever adding new text:
 2. Avoid hardcoded strings in PHP.
 3. Use Joomla translation constants.
 
-
 ## Testing checklist:
 
 * Joomla 5 installation
