@@ -55,7 +55,17 @@
             <item>added/updated comment in READ.me</item>
         </change>
     </changelog>
+
+    <changelog>
+        <element>mod_amu_ipinfo</element>
+        <type>module</type>
+        <version>0.0.21</version>
+        <change>
+            <item>correction to generate correct version of mod_amu_ipinfo.xml</item>
+        </change>
+    </changelog>
 </changelogs>
+
 
 
 
