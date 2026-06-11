@@ -2,17 +2,17 @@
 
 This directory contains the Joomla extension source code.
 
-##Module:
+## Module:
 
 mod_amu_ipinfo
 
-##Supported platforms:
+## Supported platforms:
 
 * Joomla 5.x
 * Joomla 6.x
 * PHP 8.1+
 
-##Architecture:
+## Architecture:
 
 * mod_amu_ipinfo.php is the module bootstrap.
 * helper.php contains business logic.
@@ -20,7 +20,7 @@ mod_amu_ipinfo
 * language/ contains translations.
 * media/ contains CSS and client-side assets.
 
-##Development rules:
+## Development rules:
 
 * Follow Joomla Coding Standards.
 * Keep business logic out of template files.
@@ -29,7 +29,7 @@ mod_amu_ipinfo
 * Use language constants instead of hardcoded text.
 * Preserve multilingual support.
 
-##IP Detection Rules:
+## IP Detection Rules:
 
 The module supports:
 
