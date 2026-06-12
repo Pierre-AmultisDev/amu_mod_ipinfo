@@ -190,7 +190,17 @@
             <item>Update build-release.yml</item>
         </change>
     </changelog>
+
+    <changelog>
+        <element>mod_amu_ipinfo</element>
+        <type>module</type>
+        <version>0.0.28</version>
+        <note>
+            <item>Release 0.0.28</item>
+        </note>
+    </changelog>
 </changelogs>
+
 
 
 
