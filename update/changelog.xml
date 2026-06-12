@@ -136,7 +136,17 @@
             <item>Release 0.0.25</item>
         </note>
     </changelog>
+
+    <changelog>
+        <element>mod_amu_ipinfo</element>
+        <type>module</type>
+        <version>0.0.26</version>
+        <note>
+            <item>Release 0.0.26</item>
+        </note>
+    </changelog>
 </changelogs>
+
 
 
 
