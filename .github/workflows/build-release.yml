@@ -27,6 +27,7 @@ jobs:
       version:  ${{ steps.meta.outputs.version }}
       zip_name: ${{ steps.meta.outputs.zip_name }}
       prev_tag: ${{ steps.meta.outputs.prev_tag }}
+      sha256:   ${{ steps.checksum.outputs.sha256 }}
 
     steps:
       - name: Checkout repository
@@ -67,6 +68,13 @@ jobs:
           cd ..
           ls -lh "${{ steps.meta.outputs.zip_name }}"
 
+      - name: Bereken SHA256 checksum
+        id: checksum
+        run: |
+          SHA256=$(sha256sum "${{ steps.meta.outputs.zip_name }}" | awk '{ print $1 }')
+          echo "sha256=${SHA256}" >> "$GITHUB_OUTPUT"
+          echo "SHA256: ${SHA256}"
+
       - name: Upload ZIP as workflow artifact
         uses: actions/upload-artifact@v6
         with:
@@ -96,6 +104,7 @@ jobs:
           VERSION:      ${{ needs.build.outputs.version }}
           ZIP_NAME:     ${{ needs.build.outputs.zip_name }}
           PREV_TAG:     ${{ needs.build.outputs.prev_tag }}
+          SHA256:       ${{ needs.build.outputs.sha256 }}
         run: python3 .github/scripts/update_xml.py --github
 
       - name: Patch versienummer in mod_amu_ipinfo.xml via GitHub API
