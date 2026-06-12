@@ -82,7 +82,17 @@
             <item>added ZIP_NAME in build-release.yml</item>
         </change>
     </changelog>
+
+    <changelog>
+        <element>mod_amu_ipinfo</element>
+        <type>module</type>
+        <version>0.0.23</version>
+        <change>
+            <item>added .bak files to git ignore</item>
+        </change>
+    </changelog>
 </changelogs>
+
 
 
 
