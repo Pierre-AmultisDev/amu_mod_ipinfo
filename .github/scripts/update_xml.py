@@ -119,7 +119,7 @@ def build_update_xml(version: str, download_url: str, sha256: str = '') -> str:
         '        <client>site</client>\n'
         '\n'
         '        <!-- Definition of platform requirements -->\n'
-        '        <targetplatform name="joomla" version="(5\..*|6\..*)\" />\n'
+        '        <targetplatform name="joomla" version="(5\\..*|6\\..*)\" />\n'
         '\n'
         '        <!-- The version of the release -->\n'
         f'        <version>{version}</version>\n'
@@ -253,8 +253,6 @@ def mode_github(version: str, zip_name: str, prev_tag: str):
         print("ERROR: GITHUB_TOKEN is verplicht voor --github modus.", file=sys.stderr)
         sys.exit(1)
 
-    sha256 = os.environ.get('SHA256', '').strip()
-
     headers = {
         'Authorization': f'Bearer {token}',
         'Accept':        'application/vnd.github+json',
@@ -262,6 +260,41 @@ def mode_github(version: str, zip_name: str, prev_tag: str):
         'X-GitHub-Api-Version': '2022-11-28',
     }
     base_url = f'https://api.github.com/repos/{GITHUB_REPO}/contents'
+
+    # ── mod_amu_ipinfo.xml versienummer bijwerken (alleen als gevraagd) ───────
+    if os.environ.get('PATCH_MANIFEST', '').lower() == 'true':
+        print(f"\nPatch versienummer in src/mod_amu_ipinfo/mod_amu_ipinfo.xml...")
+        manifest_path = "src/mod_amu_ipinfo/mod_amu_ipinfo.xml"
+        manifest_api  = f'{base_url}/{manifest_path}'
+
+        try:
+            manifest_content, manifest_sha = github_get_file(manifest_api, headers)
+            if manifest_content:
+                import re
+                updated = re.sub(
+                    r'<version>.*?</version>',
+                    f'<version>{version}</version>',
+                    manifest_content,
+                    count=1
+                )
+                if updated != manifest_content:
+                    github_put_file(
+                        manifest_api, headers, updated,
+                        f'chore: bump version to {version} in mod_amu_ipinfo.xml [skip ci]',
+                        manifest_sha, GITHUB_BRANCH
+                    )
+                    print(f"  mod_amu_ipinfo.xml bijgewerkt naar versie {version}")
+                else:
+                    print(f"  mod_amu_ipinfo.xml: versie was al {version}")
+            else:
+                print("  WAARSCHUWING: mod_amu_ipinfo.xml niet gevonden op GitHub", file=sys.stderr)
+        except Exception as e:
+            print(f"  WAARSCHUWING: kon manifest niet patchen: {e}", file=sys.stderr)
+
+        print(f"\nKlaar! Manifest bijgewerkt voor v{version}.")
+        return
+
+    sha256 = os.environ.get('SHA256', '').strip()
 
     # ── update.xml ──────────────────────────────────────────────────────────
     print(f"Genereer update.xml voor v{version}...")
@@ -306,36 +339,6 @@ def mode_github(version: str, zip_name: str, prev_tag: str):
         f'chore: changelog.xml for v{version} [skip ci]',
         clog_sha, GITHUB_BRANCH
     )
-
-    # ── mod_amu_ipinfo.xml versienummer bijwerken ───────────────────────────
-    if os.environ.get('PATCH_MANIFEST', '').lower() == 'true':
-        print(f"\nPatch versienummer in src/mod_amu_ipinfo/mod_amu_ipinfo.xml...")
-        manifest_path = "src/mod_amu_ipinfo/mod_amu_ipinfo.xml"
-        manifest_api  = f'{base_url}/{manifest_path}'
-
-        try:
-            manifest_content, manifest_sha = github_get_file(manifest_api, headers)
-            if manifest_content:
-                import re
-                updated = re.sub(
-                    r'<version>.*?</version>',
-                    f'<version>{version}</version>',
-                    manifest_content,
-                    count=1
-                )
-                if updated != manifest_content:
-                    github_put_file(
-                        manifest_api, headers, updated,
-                        f'chore: bump version to {version} in mod_amu_ipinfo.xml [skip ci]',
-                        manifest_sha, GITHUB_BRANCH
-                    )
-                    print(f"  mod_amu_ipinfo.xml bijgewerkt naar versie {version}")
-                else:
-                    print(f"  mod_amu_ipinfo.xml: versie was al {version}")
-            else:
-                print("  WAARSCHUWING: mod_amu_ipinfo.xml niet gevonden op GitHub", file=sys.stderr)
-        except Exception as e:
-            print(f"  WAARSCHUWING: kon manifest niet patchen: {e}", file=sys.stderr)
 
     print(f"\nKlaar! update.xml en changelog.xml bijgewerkt voor v{version}.")
 
