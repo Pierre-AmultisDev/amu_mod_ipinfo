@@ -172,7 +172,17 @@
             <item>Release 0.0.27</item>
         </note>
     </changelog>
+
+    <changelog>
+        <element>mod_amu_ipinfo</element>
+        <type>module</type>
+        <version>0.0.27</version>
+        <change>
+            <item>Update build-release.yml</item>
+        </change>
+    </changelog>
 </changelogs>
+
 
 
 
