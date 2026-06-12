@@ -14,3 +14,6 @@ Thumbs.db
 # PHP / Composer (not used here but safe to include)
 vendor/
 composer.lock
+
+# BACKUP
+*.bak
