@@ -102,6 +102,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION:      ${{ needs.build.outputs.version }}
+          ZIP_NAME:     ${{ needs.build.outputs.zip_name }}
           PATCH_MANIFEST: "true"
         run: python3 .github/scripts/update_xml.py --github
 
