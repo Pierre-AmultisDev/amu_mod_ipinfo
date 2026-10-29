@@ -1,3 +1,14 @@
+# =============================================================================
+#
+# @package    aMultis.dev 
+# @container  
+# @name       .gitignore
+# @purpose    Files to ignore by git
+# @version    v0.0.2  2026-10-21
+# @author     pierre@amultis.dev
+# @copyright  (C) Pierre Veelen
+#
+# =============================================================================
 # Build output — never commit generated ZIPs
 *.zip
 *.tar.gz
@@ -17,3 +28,8 @@ composer.lock
 
 # BACKUP
 *.bak
+
+zip_and_copy-amu_mod_ipinfo.cmd
+negeren-amu_mod_ipinfo.txt
+amu_mod_ipinfo.zip
+Command Prompt.lnk
