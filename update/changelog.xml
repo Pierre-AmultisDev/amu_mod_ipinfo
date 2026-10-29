@@ -128,4 +128,15 @@
         </note>
     </changelog>
 
+
+    <changelog>
+        <element>mod_amu_ipinfo</element>
+        <type>module</type>
+        <version>0.0.29</version>
+        <change>
+            <item>syntax problem yaml fixed and double version info prevented</item>
+            <item>added zip file for AI</item>
+        </change>
+    </changelog>
 </changelogs>
+
