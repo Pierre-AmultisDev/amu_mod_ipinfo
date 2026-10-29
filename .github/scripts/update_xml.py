@@ -120,7 +120,7 @@ def build_update_xml(version: str, download_url: str, sha256: str = '') -> str:
         '        <client>site</client>\n'
         '\n'
         '        <!-- Definition of platform requirements -->\n'
-        '        <targetplatform name="joomla" version="(5\..*|6\..*)\" />\n'
+        '        <targetplatform name="joomla" version="(5\\..*|6\\..*)" />\n'
         '\n'
         '        <!-- The version of the release -->\n'
         f'        <version>{version}</version>\n'
@@ -167,6 +167,10 @@ def build_changelog_xml(version: str, categories: dict[str, list[str]],
     Bouw changelog.xml op. Voegt de nieuwe versie toe aan eventueel
     bestaande inhoud (zodat alle versies bewaard blijven).
     """
+    if existing_xml and f'<version>{version}</version>' in existing_xml:
+        print(f"  changelog.xml bevat v{version} al, overgeslagen.")
+        return existing_xml
+
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # Bouw de entries voor deze versie
